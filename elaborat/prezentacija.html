@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWASP Top 10 во Laravel - Презентација</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        .slide {
+            min-height: 100vh;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 3px solid #e94560;
+            page-break-after: always;
+        }
+        
+        .slide-title {
+            background: linear-gradient(135deg, #e94560 0%, #0f3460 100%);
+        }
+        
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: #e94560;
+        }
+        
+        h3 {
+            font-size: 1.8em;
+            margin: 20px 0;
+            color: #16c79a;
+        }
+        
+        p, li {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            margin-left: 50px;
+        }
+        
+        .subtitle {
+            font-size: 1.8em;
+            color: #ccc;
+            margin-top: 20px;
+        }
+        
+        code {
+            background: #0f3460;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+            color: #16c79a;
+        }
+        
+        pre {
+            background: #0f3460;
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #e94560;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .box {
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .box-danger {
+            background: rgba(233, 69, 96, 0.2);
+            border: 2px solid #e94560;
+        }
+        
+        .box-success {
+            background: rgba(22, 199, 154, 0.2);
+            border: 2px solid #16c79a;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .badge-danger { background: #e94560; }
+        .badge-success { background: #16c79a; color: #1a1a2e; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #0f3460;
+        }
+        
+        th {
+            background: #e94560;
+        }
+        
+        tr:nth-child(even) {
+            background: rgba(15, 52, 96, 0.5);
+        }
+        
+        .center {
+            text-align: center;
+        }
+        
+        .slide-number {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        @media print {
+            .slide {
+                height: 100vh;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide slide-title center">
+    <h1>OWASP Top 10</h1>
+    <h1>во Laravel</h1>
+    <p class="subtitle">Имплементација на намерно ранлива веб апликација</p>
+    <br><br>
+    <p>Предмет: Етичко хакирање</p>
+</div>
+
+<!-- SLIDE 2: Agenda -->
+<div class="slide">
+    <h2>Содржина</h2>
+    <ul>
+        <li>Што е OWASP Top 10?</li>
+        <li>Зошто Laravel?</li>
+        <li>Демонстрација на ранливости (A01-A10)</li>
+        <li>Laravel вградени заштити</li>
+        <li>Security скенери</li>
+        <li>Заклучок</li>
+    </ul>
+</div>
+
+<!-- SLIDE 3: What is OWASP -->
+<div class="slide">
+    <h2>Што е OWASP Top 10?</h2>
+    <ul>
+        <li>Open Web Application Security Project</li>
+        <li>Стандардизирана листа на <strong>10 најкритични</strong> веб ранливости</li>
+        <li>Ажурирана верзија од 2021 година</li>
+        <li>Индустриски стандард за веб безбедност</li>
+    </ul>
+</div>
+
+<!-- SLIDE 4: Why Laravel -->
+<div class="slide">
+    <h2>Зошто Laravel?</h2>
+    <ul>
+        <li>Најпопуларна PHP рамка</li>
+        <li>Вградени безбедносни механизми</li>
+        <li>Eloquent ORM (заштита од SQL Injection)</li>
+        <li>CSRF токени (автоматски)</li>
+        <li>Bcrypt хеширање (по default)</li>
+        <li>Middleware систем за access control</li>
+    </ul>
+</div>
+
+<!-- SLIDE 5: A01 -->
+<div class="slide">
+    <h2>A01: Broken Access Control</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>// Нема проверка!
+public function adminPanel() {
+    return User::all();
+}</code></pre>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>// Middleware заштита
+Route::get('/admin')
+  ->middleware('role:admin');</code></pre>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: A02 -->
+<div class="slide">
+    <h2>A02: Cryptographic Failures</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>// MD5 = слабо!
+$hash = md5($password);</code></pre>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>// Bcrypt
+$hash = Hash::make($password);</code></pre>
+        </div>
+    </div>
+    <p style="margin-top:30px">MD5 може да се пробие за <strong>секунди</strong> со rainbow tables!</p>
+</div>
+
+<!-- SLIDE 7: A03 -->
+<div class="slide">
+    <h2>A03: SQL Injection</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>$sql = "SELECT * FROM users 
+WHERE name = '" . $input . "'";</code></pre>
+            <p>Напад: <code>' OR '1'='1</code></p>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>// Eloquent ORM
+User::where('name', $input)->get();</code></pre>
+            <p>Prepared statements автоматски!</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: A04 -->
+<div class="slide">
+    <h2>A04: Insecure Design</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>// 4-цифрен токен
+$token = rand(1000, 9999);
+// Само 10,000 можности!</code></pre>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>// Криптографски безбеден
+$token = Str::random(64);
+
+// + Rate limiting
+RateLimiter::hit($key);</code></pre>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: A05-A06 -->
+<div class="slide">
+    <h2>A05-A06: Misconfiguration & Components</h2>
+    <h3>A05: Security Misconfiguration</h3>
+    <pre><code># Production .env
+APP_DEBUG=false    # НИКОГАШ true!
+APP_ENV=production</code></pre>
+    
+    <h3>A06: Vulnerable Components</h3>
+    <pre><code># Провери зависности
+composer audit</code></pre>
+</div>
+
+<!-- SLIDE 10: A07 -->
+<div class="slide">
+    <h2>A07: Authentication Failures</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>Auth::login($user);
+// Session fixation можен!</code></pre>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>Auth::login($user);
+$request->session()->regenerate();</code></pre>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: A08-A09 -->
+<div class="slide">
+    <h2>A08-A09: Integrity & Logging</h2>
+    <h3>A08: File Upload</h3>
+    <pre><code>$request->validate([
+    'file' => 'required|file|max:2048|mimes:jpg,png,pdf'
+]);</code></pre>
+    
+    <h3>A09: Security Logging</h3>
+    <pre><code>Log::warning('Failed login', [
+    'ip' => $request->ip(),
+    'username' => $username
+]);</code></pre>
+</div>
+
+<!-- SLIDE 12: A10 -->
+<div class="slide">
+    <h2>A10: SSRF</h2>
+    <div class="two-col">
+        <div class="box box-danger">
+            <span class="badge badge-danger">РАНЛИВО</span>
+            <pre><code>// Без валидација!
+Http::get($userUrl);
+
+// Може да пристапи до:
+// localhost, AWS metadata...</code></pre>
+        </div>
+        <div class="box box-success">
+            <span class="badge badge-success">БЕЗБЕДНО</span>
+            <pre><code>$allowed = ['api.github.com'];
+if (!in_array($host, $allowed)) {
+    abort(403);
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: Security Tools -->
+<div class="slide">
+    <h2>Security Скенери</h2>
+    <table>
+        <tr>
+            <th>Алатка</th>
+            <th>Тип</th>
+            <th>Цена</th>
+        </tr>
+        <tr>
+            <td>Composer Audit</td>
+            <td>Dependency</td>
+            <td>Бесплатно</td>
+        </tr>
+        <tr>
+            <td>OWASP ZAP</td>
+            <td>DAST</td>
+            <td>Бесплатно</td>
+        </tr>
+        <tr>
+            <td>Burp Suite</td>
+            <td>DAST</td>
+            <td>Free / $449</td>
+        </tr>
+        <tr>
+            <td>Snyk</td>
+            <td>SAST</td>
+            <td>Free tier</td>
+        </tr>
+    </table>
+</div>
+
+<!-- SLIDE 14: Demo -->
+<div class="slide center">
+    <h2>Демонстрација</h2>
+    <br>
+    <p style="font-size:2em"><code>http://localhost:8000</code></p>
+    <br>
+    <p>Login: <code>admin</code> / <code>admin123</code></p>
+    <p>Login: <code>user</code> / <code>user123</code></p>
+</div>
+
+<!-- SLIDE 15: Conclusion -->
+<div class="slide">
+    <h2>Заклучок</h2>
+    <ul>
+        <li>Laravel има <strong>одлични вградени заштити</strong></li>
+        <li>Ранливостите настануваат кога ги <strong>заобиколуваме</strong></li>
+        <li>Користи <code>composer audit</code> редовно</li>
+        <li>Комбинирај SAST + DAST алатки</li>
+        <li><strong>APP_DEBUG=false</strong> во production!</li>
+    </ul>
+</div>
+
+<!-- SLIDE 16: Questions -->
+<div class="slide slide-title center">
+    <h1>Прашања?</h1>
+    <br>
+    <p class="subtitle">Благодарам за вниманието!</p>
+</div>
+
+</body>
+</html>
