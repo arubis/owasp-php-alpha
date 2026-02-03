@@ -1,36 +1,83 @@
 <?php
-/**
- * User model
- */
 
-class User {
-    private $db;
+namespace App\Models;
 
-    public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class User extends Authenticatable
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'username',
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function findByUsername($username) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        return $stmt->fetch();
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 
-    public function findById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch();
+    /**
+     * Get products created by this user
+     */
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'created_by');
     }
 
-    public function create($username, $email, $passwordHash, $role = 'user') {
-        $stmt = $this->db->prepare(
-            "INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)"
-        );
-        return $stmt->execute([$username, $email, $passwordHash, $role]);
+    /**
+     * Get audit logs for this user
+     */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
     }
 
-    public function updatePassword($userId, $passwordHash) {
-        $stmt = $this->db->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
-        return $stmt->execute([$passwordHash, $userId]);
+    /**
+     * Get password reset tokens for this user
+     */
+    public function passwordResets(): HasMany
+    {
+        return $this->hasMany(CustomPasswordReset::class);
     }
 }
