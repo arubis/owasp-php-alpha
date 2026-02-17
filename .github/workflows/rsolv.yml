@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             mise-${{ runner.os }}-
 
-      - uses: RSOLV-dev/RSOLV-action@v3
+      - uses: RSOLV-dev/RSOLV-action@v4
         with:
           rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
           mode: full
