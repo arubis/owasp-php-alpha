@@ -1,8 +1,17 @@
 name: RSOLV Security Scan
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      api_target:
+        description: 'API target (production or staging)'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
 
 permissions:
   contents: write
@@ -13,6 +22,8 @@ permissions:
 jobs:
   rsolv:
     runs-on: ubuntu-latest
+    env:
+      RSOLV_API_URL: ${{ inputs.api_target == 'staging' && 'https://api.rsolv-staging.com' || secrets.RSOLV_API_URL || 'https://api.rsolv.dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,14 +31,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .mise-cache
-          key: mise-${{ runner.os }}-${{ hashFiles('**/.tool-versions', '**/.mise.toml', '**/mix.lock', '**/composer.lock', '**/pom.xml') }}
+          key: mise-${{ runner.os }}-${{ hashFiles('**/.tool-versions', '**/.mise.toml', '**/mix.lock', '**/Gemfile.lock') }}
           restore-keys: |
             mise-${{ runner.os }}-
 
       - uses: RSOLV-dev/RSOLV-action@v4
         with:
-          rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
+          rsolvApiKey: ${{ inputs.api_target == 'staging' && secrets.RSOLV_API_KEY_STAGING || secrets.RSOLV_API_KEY }}
           mode: full
-          max_issues: 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_API_KEY: ${{ secrets.CLAUDE_CODE_API_KEY }}
